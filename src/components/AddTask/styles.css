@@ -1,0 +1,26 @@
+#add-form {
+    width: fit-content;
+    margin-inline: auto;
+    justify-content: center;
+}
+
+#add-form label {
+    position: absolute;
+    left: -1000rem;
+}
+
+#add-form input {
+    min-width: 22.5rem;
+}
+
+#add-form button {
+    align-self: flex-start;
+}
+
+#add-form-error {
+    font-size: 0.75rem;
+    color: red;
+    text-align: left;
+    margin-inline-start: 12px;
+    margin-block-start: 4px;
+}
