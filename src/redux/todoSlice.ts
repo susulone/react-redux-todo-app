@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
 import { TodoInterface } from "../App";
-// import type { RootState } from "./store";
+import type { RootState } from "./store";
 
 // Define a type for the slice state
 interface TodosListInterface {
@@ -26,14 +26,31 @@ const initialState: TodosListInterface = {
  * background everything works as immutated state.
  */
 export const todoSlice = createSlice({
-    name: "todo",
+    name: "todos",
     initialState,
-    reducers: {},
+    reducers: {
+        addTodo: {
+            reducer: (state, action: PayloadAction<TodoInterface>) => {
+                state.todos.push(action.payload);
+                console.log(action.payload);
+                console.log(typeof action);
+            },
+            prepare: (task: string) => {
+                return {
+                    payload: {
+                        id: nanoid(),
+                        task,
+                        completed: false,
+                    },
+                };
+            },
+        },
+    },
 });
 
-export const {} = todoSlice.actions;
+export const { addTodo } = todoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-// export const selectCount = (state: RootState) => state.counter.value
+export const selectAllTodos = (state: RootState) => state.todos;
 
 export default todoSlice.reducer;
