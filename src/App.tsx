@@ -1,3 +1,7 @@
+// Redux hooks, dispatch and actions
+import { useAppSelector } from "./redux/hooks";
+import { selectError } from "./redux/taskSlice";
+
 // Components
 import { Container } from "react-bootstrap";
 import { Footer } from "./components/Footer/Footer";
@@ -7,17 +11,18 @@ import { TaskList } from "./components/TaskList/TaskList";
 // Interfaces, types and styles
 import "./App.css";
 
-export interface TaskInterface {
+export type Task = {
     id: string | number;
     task: string;
     completed: boolean;
-}
+};
 
 function App() {
+    const error: string | null = useAppSelector(selectError);
     return (
         <Container fluid>
             <Header />
-            <TaskList />
+            {error === null ? <TaskList /> : <p>{error}</p>}
             <Footer />
         </Container>
     );

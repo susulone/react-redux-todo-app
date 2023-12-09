@@ -14,7 +14,7 @@ import { Plus } from "react-feather";
 
 // Redux hooks, dispatch and actions
 import { useAppDispatch } from "../../redux/hooks";
-import { addTask } from "../../redux/taskSlice";
+import { addNewTask } from "../../redux/addNewTask";
 
 // Interfaces, types and styles
 import "./styles.css";
@@ -33,7 +33,7 @@ export const AddTask = () => {
                 "The task description needs to be under 50 characters."
             );
         } else {
-            dispatch(addTask({ task: newTask }));
+            dispatch(addNewTask(newTask));
             setNewTask("");
         }
     };

@@ -1,5 +1,5 @@
-// React state
-import { useState } from "react";
+// React
+import React, { useState } from "react";
 
 // Redux hooks, dispatch and actions
 import { useAppDispatch } from "../../redux/hooks";
@@ -10,13 +10,14 @@ import { Col, FormCheck, FormControl, Stack } from "react-bootstrap";
 import { IconButton } from "../IconButton/IconButton";
 
 // Interfaces, types and styles
-import { TaskInterface } from "../../App";
+import { Task } from "../../App";
 import "./styles.css";
 
-export const TaskItem = ({ id, task, completed }: TaskInterface) => {
+export const TaskItem = ({ id, task, completed }: Task) => {
     const dispatch = useAppDispatch();
     const [editMode, setEditMode] = useState(false);
     const [editedTaskText, setEditedTaskText] = useState(task);
+    const [errorMsg, setErrorMsg] = useState("");
 
     const handleTaskCompleted = () => {
         dispatch(
@@ -30,25 +31,39 @@ export const TaskItem = ({ id, task, completed }: TaskInterface) => {
     const handleTaskDelete = () => {
         dispatch(
             deleteTask({
-                editedTask: {
-                    id: id,
-                    task: editedTaskText,
-                    completed: completed,
-                },
+                id: id,
             })
         );
     };
 
     const handleTaskEdit = () => {
-        dispatch(
-            editTask({
-                editedTask: {
-                    id: id,
-                    task: editedTaskText,
-                    completed: completed,
-                },
-            })
-        );
+        if (editedTaskText.trim().length <= 0) {
+            setErrorMsg("The task description cannot be empty.");
+        } else if (editedTaskText.trim().length > 50) {
+            setErrorMsg(
+                "The task description needs to be under 50 characters."
+            );
+        } else {
+            dispatch(
+                editTask({
+                    editedTask: {
+                        id: id,
+                        task: editedTaskText,
+                        completed: completed,
+                    },
+                })
+            );
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditedTaskText(e.target.value);
+        if (
+            editedTaskText.trim().length > 0 &&
+            editedTaskText.trim().length < 50
+        ) {
+            setErrorMsg("");
+        }
     };
 
     return (
@@ -62,13 +77,17 @@ export const TaskItem = ({ id, task, completed }: TaskInterface) => {
             />
             {editMode ? (
                 <>
-                    <FormControl
-                        value={editedTaskText}
-                        onChange={(e) => {
-                            setEditedTaskText(e.target.value);
-                            console.log(e.target.value);
-                        }}
-                    />
+                    <Stack>
+                        <FormControl
+                            value={editedTaskText}
+                            onChange={handleChange}
+                        />
+                        {errorMsg ? (
+                            <section id="add-form-error">{errorMsg}</section>
+                        ) : (
+                            <></>
+                        )}
+                    </Stack>
                     <IconButton
                         iconName={"save"}
                         handleOnClick={() => {

@@ -1,22 +1,21 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
-import { TaskInterface } from "../App";
+import { Task } from "../App";
 import type { RootState } from "./store";
+import { fetchTasks } from "./fetchTasks";
+import { addNewTask } from "./addNewTask";
 
 // Define a type for the slice state
-interface TaskListInterface {
-    tasks: TaskInterface[];
-}
+type TasksState = {
+    status: "loading" | "idle" | "succeeded" | "failed";
+    error: string | null;
+    tasks: Task[];
+};
 
 // Define the initial state using that type
-const initialState: TaskListInterface = {
-    tasks: [
-        { id: 1, task: "Buy potatoes", completed: false },
-        { id: 2, task: "Make food", completed: false },
-        { id: 3, task: "Exercise", completed: false },
-        { id: 4, task: "Do the dishes", completed: false },
-        { id: 5, task: "Floss the teeth", completed: false },
-        { id: 6, task: "Play videogames", completed: true },
-    ],
+const initialState: TasksState = {
+    tasks: [],
+    error: null,
+    status: "idle",
 };
 
 /**
@@ -56,6 +55,40 @@ export const taskSlice = createSlice({
             state.tasks[index].completed = action.payload.completed;
         },
     },
+    extraReducers: (builder) => {
+        // When we send a request,
+        // `fetchTodos.pending` is being fired:
+        builder.addCase(fetchTasks.pending, (state) => {
+            state.status = "loading";
+            state.error = null;
+            console.log("Fetching data...");
+        });
+
+        // When a server responses with the data,
+        // `fetchTodos.fulfilled` is fired:
+        builder.addCase(fetchTasks.fulfilled, (state, action) => {
+            state.status = "succeeded";
+            state.tasks.push(...action.payload);
+            console.log("Fetched data successfully!");
+        });
+
+        // When a server responses with an error:
+        builder.addCase(fetchTasks.rejected, (state, action) => {
+            // TO DO: Fix this
+            if (action.payload) {
+                state.error = action.payload.message;
+            }
+            state.status = "failed";
+
+            console.log("Fetching data failed!");
+        });
+
+        builder.addCase(addNewTask.fulfilled, (state, action) => {
+            if (action.payload) {
+                state.tasks.push(action.payload);
+            }
+        });
+    },
 });
 
 /**
@@ -66,6 +99,10 @@ export const { addTask, deleteTask, editTask, toggleComplete } =
     taskSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type.
-export const selectAllTaskss = (state: RootState) => state.tasks;
+export const selectAllTasks = (state: RootState) => state.tasks.tasks;
+
+export const selectStatus = (state: RootState) => state.tasks.status;
+
+export const selectError = (state: RootState) => state.tasks.error;
 
 export default taskSlice.reducer;
