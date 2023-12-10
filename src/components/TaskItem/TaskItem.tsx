@@ -3,7 +3,8 @@ import React, { useState } from "react";
 
 // Redux hooks, dispatch and actions
 import { useAppDispatch } from "../../redux/hooks";
-import { deleteTask, editTask, toggleComplete } from "../../redux/taskSlice";
+import { deleteTask, editTask } from "../../redux/taskSlice";
+import { toggleTaskComplete } from "../../redux/toggleTaskComplete";
 
 // Components
 import { Col, FormCheck, FormControl, Stack } from "react-bootstrap";
@@ -21,8 +22,9 @@ export const TaskItem = ({ id, task, completed }: Task) => {
 
     const handleTaskCompleted = () => {
         dispatch(
-            toggleComplete({
+            toggleTaskComplete({
                 id: id,
+                task: task,
                 completed: !completed,
             })
         );

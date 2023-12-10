@@ -3,6 +3,7 @@ import { Task } from "../App";
 import type { RootState } from "./store";
 import { fetchTasks } from "./fetchTasks";
 import { addNewTask } from "./addNewTask";
+import { toggleTaskComplete } from "./toggleTaskComplete";
 
 // Define a type for the slice state
 type TasksState = {
@@ -86,6 +87,14 @@ export const taskSlice = createSlice({
         builder.addCase(addNewTask.fulfilled, (state, action) => {
             if (action.payload) {
                 state.tasks.push(action.payload);
+            }
+        });
+        builder.addCase(toggleTaskComplete.fulfilled, (state, action) => {
+            if (action.payload !== undefined) {
+                const index = state.tasks.findIndex(
+                    (task) => task.id === action.payload!.id
+                );
+                state.tasks[index] = action.payload;
             }
         });
     },
